@@ -1,3 +1,11 @@
+#ifndef LISTA_H
+#define LISTA_H
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "../constantes.h"
+
 typedef void * TElemento;
 typedef struct celda * TLista;
 typedef struct celda * TPosicion;
@@ -37,3 +45,5 @@ int l_size(TLista lista); //Retorna la cantidad de elementos de la lista.
 
 int l_destruir(TLista * lista); /*Elimina todos los elementos y liberta toda la memoria utilizada
 pr la lista lista. Retorna verdadero si procede con éxito, falso en caso contrario.*/
+
+#endif

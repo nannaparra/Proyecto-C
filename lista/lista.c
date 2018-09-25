@@ -1,7 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "lista.h"
-#include "constantes.h"
 
 TLista crear_lista(){
     TLista lista_nueva=(TLista)malloc(sizeof(struct celda));

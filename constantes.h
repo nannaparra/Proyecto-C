@@ -1,6 +1,8 @@
 #ifndef CONST_H //Comienza del bloque CONST_H
 #define CONST_H
 
+typedef int boolean;
+
 #define FALSE 0
 #define TRUE 1
 #define LST_NO_INI 2

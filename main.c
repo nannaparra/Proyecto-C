@@ -6,5 +6,7 @@
 
 int main() {
     TLista lista_ciudades = crear_lista();
-    leer_archivo("archivo_texto.txt", lista_ciudades);
+    leer_archivo("archivo_texto.txt", &lista_ciudades);
+
+    printf("%i", l_size(lista_ciudades));
 }

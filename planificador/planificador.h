@@ -11,4 +11,4 @@ typedef struct ciudad {
     float pos_y;
 } *TCiudad;
 
-void leer_archivo(char *path_archivo, TLista lista_ciudades);
+void leer_archivo(char *path_archivo, TLista *lista_ciudades);

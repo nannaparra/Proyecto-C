@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "../lista/lista.h"
+#include "../colacp/colacp.h"
 #include "../constantes.h"
 
 typedef struct ciudad {
@@ -12,3 +13,5 @@ typedef struct ciudad {
 } *TCiudad;
 
 void leer_archivo(char *path_archivo, TLista *lista_ciudades);
+
+void mostrar_descendente(TLista lista_ciudades);

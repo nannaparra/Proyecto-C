@@ -52,10 +52,15 @@ int l_eliminar(TLista * lista, TPosicion pos){
     if(pos==POS_NULA)
        exito=FALSE;
     else{
-       if((pos->celda_anterior)==POS_NULA){
-          pos->celda_siguiente->celda_anterior=POS_NULA;
-          (*lista)=pos->celda_siguiente;
-          free(pos);
+        if((pos->celda_anterior)==POS_NULA){
+           if((pos->celda_siguiente)==POS_NULA){
+               pos->elemento=NULL;
+           }
+           else{
+           pos->celda_siguiente->celda_anterior=POS_NULA;
+           (*lista)=pos->celda_siguiente;
+           free(pos);
+           }
        }
        else{
           if((pos->celda_siguiente)==POS_NULA){

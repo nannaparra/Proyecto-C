@@ -15,6 +15,18 @@ int prioridad_descendente(TEntrada entrada1, TEntrada entrada2) {
     }
 }
 
+int prioridad_ascendente(TEntrada entrada1, TEntrada entrada2){
+    if((entrada1->valor)<(entrada2->valor))
+       return 1;
+    else{
+        if((entrada1->valor)>(entrada2->valor))
+           return -1;
+        else
+           return 0;
+    }
+}
+
+
 void leer_nombre(TCiudad ciudad, FILE *archivo) {
     char nombre_final[100];
     int caracter_leido = fgetc(archivo);
@@ -57,6 +69,26 @@ void leer_archivo(char *path_archivo, TLista *lista_ciudades) {
     }
 
     fclose(archivo_ciudades);
+}
+
+void mostrar_ascendente(TLista lista_ciudades){
+    TColaCP cola = crear_cola_CP(&prioridad_ascendente);
+    TPosicion pos=l_primera(lista_ciudades);
+    while(pos!=POS_NULA){
+        TCiudad actual=pos->elemento;
+        TEntrada entr=(TEntrada) malloc(sizeof(struct entrada));
+        entr->clave=actual->nombre;
+        int dist=distancia(ciudad_actual,actual);
+        entr->valor=&dist;
+        cp_insertar(cola,entr);
+        pos=l_siguiente(lista_ciudades,pos);
+    }
+    int contador = 1;
+    while(cp_size(cola)!=0) {
+        TClave nombre=cp_eliminar(cola)->clave;
+        printf("%i. %p",contador,nombre);
+    }
+    cp_destruir(cola);
 }
 
 void mostrar_descendente(TLista lista_ciudades) {

@@ -62,10 +62,9 @@ void leer_archivo(char *path_archivo, TLista *lista_ciudades) {
 void mostrar_descendente(TLista lista_ciudades) {
     TColaCP colaCP = crear_cola_CP(&prioridad_descendente);
     TPosicion actual = l_primera(lista_ciudades);
-    TEntrada entrada = NULL;
 
     while (actual != l_ultima(lista_ciudades)) {
-        entrada = (TEntrada) malloc(sizeof(TEntrada));
+        TEntrada entrada = (TEntrada) malloc(sizeof(TEntrada));
 
         entrada->clave = l_recuperar(lista_ciudades, actual);
         entrada->valor = entrada->clave;

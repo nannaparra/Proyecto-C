@@ -18,12 +18,22 @@ int main() {
     printf("|                                                |\n");
     printf("**************************************************\n");
 
+    printf("Ingrese una opcion entre (1-4) ");
     scanf("%i",&opcion);
     switch(opcion){
-        case 1:{mostrar_ascendente(lista_ciudades);
-                 break;}
-        case 2:{mostrar_descendente(lista_ciudades);
-                 break;}
+        case 1: {
+            mostrar_ascendente(lista_ciudades);
+            break;
+        }
+        case 2: {
+            mostrar_descendente(lista_ciudades);
+            break;
+        }
+        case 4:
+            exit(EXIT_SUCCESS);
+        default:
+            printf("Era una opcion entre 1-4");
+            break;
     }
     return 0;
 }

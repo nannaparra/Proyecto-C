@@ -91,8 +91,10 @@ void mostrar_ascendente(TLista lista_ciudades){
     }
     int contador = 1;
     while(cp_size(cola)!=0) {
-        TClave nombre=cp_eliminar(cola)->clave;
-        printf("%i. %p",contador,nombre);
+        char *nombre=cp_eliminar(cola)->clave;
+        printf("%i. %s\n",contador,nombre);
+
+        contador++;
     }
     cp_destruir(cola);
 }

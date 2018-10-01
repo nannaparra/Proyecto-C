@@ -134,7 +134,7 @@ int cp_insertar(TColaCP cola, TEntrada entr) {
     }
 
     cola->cantidad_elementos++;
-    
+
     return TRUE;
 }
 

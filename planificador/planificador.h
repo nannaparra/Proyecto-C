@@ -14,4 +14,6 @@ typedef struct ciudad {
 
 void leer_archivo(char *path_archivo, TLista *lista_ciudades);
 
+void mostrar_ascendente(TLista lista_ciudades );
+
 void mostrar_descendente(TLista lista_ciudades);

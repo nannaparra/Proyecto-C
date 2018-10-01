@@ -19,13 +19,14 @@ int prioridad_descendente(TEntrada entrada1, TEntrada entrada2) {
 }
 
 int prioridad_ascendente(TEntrada entrada1, TEntrada entrada2){
-    if((entrada1->valor)<(entrada2->valor))
-       return 1;
-    else{
-        if((entrada1->valor)>(entrada2->valor))
-           return -1;
-        else
-           return 0;
+     int clave1 = *((int *) entrada1->clave);
+    int clave2 = *((int *) entrada2->clave);
+    if (clave1 < clave2) {
+        return 1;
+    } else if (clave1 > clave2) {
+        return -1;
+    } else {
+        return 0;
     }
 }
 
@@ -79,20 +80,23 @@ void leer_archivo(char *path_archivo, TLista *lista_ciudades) {
 void mostrar_ascendente(TLista lista_ciudades){
     TColaCP cola = crear_cola_CP(&prioridad_ascendente);
     TPosicion pos=l_primera(lista_ciudades);
+    int *dist;
     while(pos!=POS_NULA){
         TCiudad actual=pos->elemento;
-        TEntrada entr=(TEntrada) malloc(sizeof(struct entrada));
-        entr->clave=actual->nombre;
-        int *dist=distancia(ciudad_actual,actual);
-        entr->valor=&dist;
+        TEntrada entr=(TEntrada)malloc(sizeof(struct entrada));
+        dist = (int *) malloc(sizeof(int));
+        *dist=distancia(actual,ciudad_actual);
+        entr->clave=dist;
+        entr->valor=actual;
         cp_insertar(cola,entr);
         pos=l_siguiente(lista_ciudades,pos);
     }
     int contador = 1;
     while(cp_size(cola)!=0) {
-        char *nombre=cp_eliminar(cola)->clave;
+        TEntrada elemento_ciudad = cp_eliminar(cola);
+        TCiudad ciudad_recuperada = elemento_ciudad->valor;
+        char *nombre = ciudad_recuperada->nombre;
         printf("%i. %s\n",contador,nombre);
-
         contador++;
     }
     cp_destruir(cola);

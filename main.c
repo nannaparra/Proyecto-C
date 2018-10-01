@@ -29,8 +29,14 @@ int main() {
             mostrar_descendente(lista_ciudades);
             break;
         }
-        case 4:
+        case 3: {
+            reducir_horas_manejo(lista_ciudades);
+            break;
+        }
+        case 4:{
+            l_destruir(&lista_ciudades);
             exit(EXIT_SUCCESS);
+        }
         default:
             printf("Era una opcion entre 1-4");
             break;

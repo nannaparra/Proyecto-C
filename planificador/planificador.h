@@ -12,8 +12,27 @@ typedef struct ciudad {
     float pos_y;
 } *TCiudad;
 
-void leer_archivo(char *path_archivo, TLista *lista_ciudades);
+/**
+ * Lee el archivo pasado por parametro y lo carga a la lista por parametro
+ * @param Direccion del archivo
+ * @param Lista para los ciudades
+ */
+void leer_archivo(char *, TLista *);
 
-void mostrar_ascendente(TLista lista_ciudades );
+/**
+ * Muestra la lista de forma ascendente en funcion de la distancia de la ciudad a la actual
+ * @param Lista de las ciudades
+ */
+void mostrar_ascendente(TLista);
 
-void mostrar_descendente(TLista lista_ciudades);
+/**
+ * Muestra la lista de forma descendente en funcion de la distancia de la ciudad a la actual
+ * @param Lista de las ciudades
+ */
+void mostrar_descendente(TLista);
+
+/**
+ * Muestra la lista de forma de la ciudad mas cercana a la mas lejana a la actual
+ * @param Lista de las ciudades
+ */
+void reducir_horas_manejo(TLista);

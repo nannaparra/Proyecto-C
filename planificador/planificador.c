@@ -165,7 +165,6 @@ void reducir_horas_manejo(TLista lista_ciudades) {
         TCiudad ciudad_recuperada = elemento_ciudad->valor;
 
         total_distancia += *((int*) elemento_ciudad->clave);
-        printf("%i ", *((int*) elemento_ciudad->clave));
 
         char *nombre = ciudad_recuperada->nombre;
         printf("%i. %s\n", contador, nombre);

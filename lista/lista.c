@@ -154,6 +154,6 @@ int l_destruir(TLista * lista){
         free(posicion);
         posicion=aux;
     }
-    free(lista);
+    //free(*lista);
     return TRUE;
 }

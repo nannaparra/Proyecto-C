@@ -1,6 +1,6 @@
 #include "colacp.h"
 
-TNodo ultimo_nodo(TColaCP cola) {
+TNodo ultimo_nodo_padre(TColaCP cola) {
     TNodo nodo_actual, nodo_ultimo = ELE_NULO;
     TLista lista_nodos = crear_lista();
     boolean encontre = FALSE;
@@ -14,23 +14,28 @@ TNodo ultimo_nodo(TColaCP cola) {
 
         if (nodo_actual != ELE_NULO) {
             // Si tiene hijos nulos encontro el padre
-            if (nodo_actual->hijo_derecho == ELE_NULO) {
-                nodo_ultimo = nodo_actual->hijo_derecho;
+            if (nodo_actual->hijo_izquierdo == ELE_NULO) {
+                nodo_ultimo = nodo_actual;
                 encontre = TRUE;
-            } else if (nodo_actual->hijo_izquierdo == ELE_NULO){
-                nodo_ultimo = nodo_actual->hijo_izquierdo;
+            } else if (nodo_actual->hijo_derecho == ELE_NULO){
+                nodo_ultimo = nodo_actual;
                 encontre = TRUE;
             } else {
                 // Agrega los hijos a la lista
-                l_insertar(&lista_nodos, l_ultima(lista_nodos)->celda_siguiente, nodo_actual->hijo_derecho);
-                l_insertar(&lista_nodos, l_ultima(lista_nodos)->celda_siguiente, nodo_actual->hijo_izquierdo);
+                TPosicion ultima = l_ultima(lista_nodos);
+
+                if (ultima == POS_NULA) {
+                    l_insertar(&lista_nodos, POS_NULA, nodo_actual->hijo_izquierdo);
+                    l_insertar(&lista_nodos, l_ultima(lista_nodos)->celda_siguiente, nodo_actual->hijo_derecho);
+                } else {
+                    l_insertar(&lista_nodos, l_ultima(lista_nodos)->celda_siguiente, nodo_actual->hijo_izquierdo);
+                    l_insertar(&lista_nodos, l_ultima(lista_nodos)->celda_siguiente, nodo_actual->hijo_derecho);
+                }
             }
         }
     }
 
     l_destruir(&lista_nodos);
-
-    free(lista_nodos);
 
     return nodo_ultimo;
 }
@@ -61,8 +66,7 @@ void burbujear_abajo(TColaCP cola) {
         } else {
             // Minimo de los hijos
             if (nodo_actual->hijo_derecho != ELE_NULO) {
-                if (funcion_prioridad(nodo_actual->hijo_izquierdo->entrada,
-                        nodo_actual->hijo_derecho->entrada) == -1) {
+                if (funcion_prioridad(nodo_actual->hijo_izquierdo->entrada, nodo_actual->hijo_derecho->entrada) == 1) {
                     nodo_minimo = nodo_actual->hijo_izquierdo;
                 } else {
                     nodo_minimo = nodo_actual->hijo_derecho;
@@ -90,7 +94,12 @@ void burbujear_abajo(TColaCP cola) {
 TColaCP crear_cola_CP(int (*f)(TEntrada, TEntrada)) {
     funcion_prioridad = f;
 
-    return (TColaCP) malloc(sizeof(TColaCP));
+    TColaCP colaCP = (TColaCP) malloc(sizeof(struct cola_con_prioridad));
+
+    colaCP->raiz = ELE_NULO;
+    colaCP->cantidad_elementos = 0;
+
+    return colaCP;
 }
 
 int cp_insertar(TColaCP cola, TEntrada entr) {
@@ -98,23 +107,35 @@ int cp_insertar(TColaCP cola, TEntrada entr) {
         exit(CCP_NO_INI);
     }
 
-    TNodo nuevo_nodo = (TNodo) malloc(sizeof(TNodo));
-    TNodo padre_ultimo_nodo = ultimo_nodo(cola);
+    TNodo nuevo_nodo = (TNodo) malloc(sizeof(struct nodo));
 
-    nuevo_nodo->entrada = entr;
-    nuevo_nodo->padre = padre_ultimo_nodo;
-    nuevo_nodo->hijo_izquierdo = ELE_NULO;
-    nuevo_nodo->hijo_derecho = ELE_NULO;
+    if (cola->raiz == ELE_NULO) {
+        nuevo_nodo->entrada = entr;
+        nuevo_nodo->padre = ELE_NULO;
+        nuevo_nodo->hijo_izquierdo = ELE_NULO;
+        nuevo_nodo->hijo_derecho = ELE_NULO;
 
-    if (padre_ultimo_nodo->hijo_izquierdo == ELE_NULO) {
-        padre_ultimo_nodo->hijo_izquierdo = nuevo_nodo;
+        cola->raiz = nuevo_nodo;
     } else {
-        padre_ultimo_nodo->hijo_derecho = nuevo_nodo;
+        TNodo padre_ultimo_nodo = ultimo_nodo_padre(cola);
+
+        nuevo_nodo->entrada = entr;
+        nuevo_nodo->padre = padre_ultimo_nodo;
+        nuevo_nodo->hijo_izquierdo = ELE_NULO;
+        nuevo_nodo->hijo_derecho = ELE_NULO;
+
+        if (padre_ultimo_nodo->hijo_izquierdo == ELE_NULO) {
+            padre_ultimo_nodo->hijo_izquierdo = nuevo_nodo;
+        } else {
+            padre_ultimo_nodo->hijo_derecho = nuevo_nodo;
+        }
+
+        burbujear_arriba(cola->raiz, nuevo_nodo);
     }
 
     cola->cantidad_elementos++;
 
-    burbujear_arriba(cola->raiz, nuevo_nodo);
+    return TRUE;
 }
 
 TEntrada cp_eliminar(TColaCP cola) {
@@ -123,11 +144,35 @@ TEntrada cp_eliminar(TColaCP cola) {
     }
 
     TEntrada entrada_a_devolver = cola->raiz->entrada;
-    TNodo nodo_ultimo = ultimo_nodo(cola);
+    TNodo nodo_ultimo_padre = ultimo_nodo_padre(cola);
 
-    cola->raiz->entrada = nodo_ultimo->entrada;
+    if (nodo_ultimo_padre->hijo_derecho != ELE_NULO) {
+        cola->raiz->entrada = nodo_ultimo_padre->hijo_derecho->entrada;
 
-    free(nodo_ultimo);
+        free(nodo_ultimo_padre->hijo_derecho);
+
+        nodo_ultimo_padre->hijo_derecho = ELE_NULO;
+    } else {
+        if (nodo_ultimo_padre->hijo_izquierdo == ELE_NULO) {
+            TNodo padre = nodo_ultimo_padre->padre;
+
+            if (padre == ELE_NULO) {
+                free(nodo_ultimo_padre);
+            } else {
+                cola->raiz->entrada = padre->hijo_derecho->entrada;
+
+                free(nodo_ultimo_padre->padre->hijo_derecho);
+
+                nodo_ultimo_padre->padre->hijo_derecho = ELE_NULO;
+            }
+        } else {
+            cola->raiz->entrada = nodo_ultimo_padre->hijo_izquierdo->entrada;
+
+            free(nodo_ultimo_padre->hijo_izquierdo);
+
+            nodo_ultimo_padre->hijo_izquierdo = ELE_NULO;
+        }
+    }
 
     burbujear_abajo(cola);
 

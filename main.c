@@ -41,5 +41,7 @@ int main() {
             printf("Era una opcion entre 1-4");
             break;
     }
+
+    l_destruir(&lista_ciudades);
     return 0;
 }

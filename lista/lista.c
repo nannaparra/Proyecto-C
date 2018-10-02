@@ -1,5 +1,12 @@
 #include "lista.h"
 
+/**
+ * Destruye la posicion recursivamente desde el final al comienzo
+ * @param posicion Posicion por donde empezar
+ */
+void destruir_celda_recursivo(TPosicion posicion);
+
+
 TLista crear_lista(){
     TLista lista_nueva=(TLista)malloc(sizeof(struct celda));
     lista_nueva->elemento=NULL;
@@ -61,8 +68,7 @@ int l_eliminar(TLista * lista, TPosicion pos){
            (*lista)=pos->celda_siguiente;
            free(pos);
            }
-       }
-       else{
+       } else {
           if((pos->celda_siguiente)==POS_NULA){
              pos->celda_anterior->celda_siguiente=POS_NULA;
              free(pos);
@@ -147,13 +153,27 @@ int l_size(TLista lista){
 int l_destruir(TLista * lista){
     if(lista==NULL)
        exit(LST_NO_INI);
-    TPosicion posicion=(*lista);
+
+    destruir_celda_recursivo(*lista);
+    /*TPosicion posicion=(*lista);
     TPosicion aux=posicion;
     while(aux!=POS_NULA){
         aux=aux->celda_siguiente;
         free(posicion);
         posicion=aux;
     }
-    //free(*lista);
+    //free(*lista);*/
+
+    lista = POS_NULA;
     return TRUE;
+}
+
+void destruir_celda_recursivo(TPosicion posicion) {
+    if (posicion != POS_NULA) {
+        if (posicion->celda_siguiente != POS_NULA) {
+            destruir_celda_recursivo(posicion->celda_siguiente);
+        }
+
+        free(posicion);
+    }
 }

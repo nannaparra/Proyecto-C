@@ -1,52 +1,45 @@
 #include "planificador.h"
 TCiudad ciudad_actual;
 
-int distancia(TCiudad ciudad1, TCiudad ciudad2) {
-    return abs(ciudad2->pos_x - ciudad1->pos_x) + abs(ciudad2->pos_y - ciudad1->pos_y);
-}
+/**
+ * Devuelve la distancia entre las 2 ciudades
+ * @param ciudad1 Ciudad 1
+ * @param ciudad2 Ciudad 2
+ * @return Distancia de Manhattan de las 2 ciudades
+ */
+int distancia(TCiudad ciudad1, TCiudad ciudad2);
 
-int prioridad_descendente(TEntrada entrada1, TEntrada entrada2) {
-    int clave1 = *((int *) entrada1->clave);
-    int clave2 = *((int *) entrada2->clave);
+/**
+ * Define la prioridad para la cola de forma descendente
+ * @param entrada1 Entrada 1
+ * @param entrada2 Entrada 2
+ * @return 1 si la entrada 1 tiene mayor prioridad que la 2, 0 si tienen igual prioridad
+ *      -1 si tiene menor prioridad
+ */
+int prioridad_descendente(TEntrada entrada1, TEntrada entrada2);
 
-    if (clave1 > clave2) {
-        return 1;
-    } else if (clave1 < clave2) {
-        return -1;
-    } else {
-        return 0;
-    }
-}
+/**
+ * Define la prioridad para la cola de forma ascendente
+ * @param entrada1 Entrada 1
+ * @param entrada2 Entrada 2
+ * @return 1 si la entrada 1 tiene mayor prioridad que la 2, 0 si tienen igual prioridad
+ *      -1 si tiene menor prioridad
+ */
+int prioridad_ascendente(TEntrada entrada1, TEntrada entrada2);
 
-int prioridad_ascendente(TEntrada entrada1, TEntrada entrada2){
-     int clave1 = *((int *) entrada1->clave);
-    int clave2 = *((int *) entrada2->clave);
-    if (clave1 < clave2) {
-        return 1;
-    } else if (clave1 > clave2) {
-        return -1;
-    } else {
-        return 0;
-    }
-}
+/**
+ * Lee el nombre hasta el ; de un archivo y lo guarda en el campo nombre de la ciudad
+ * @param ciudad Ciudad en donde guardar el nombre
+ * @param archivo Archivo de donde leer el nombre
+ */
+void leer_nombre(TCiudad ciudad, FILE *archivo);
 
-void leer_nombre(TCiudad ciudad, FILE *archivo) {
-    char nombre_final[100];
-    int caracter_leido = fgetc(archivo);
-    unsigned int contador = 0;
-
-    while (caracter_leido != ';' && contador < 100) {
-        nombre_final[contador] = (char) caracter_leido;
-
-        contador++;
-        caracter_leido = fgetc(archivo);
-    }
-
-    ciudad->nombre = (char *) malloc(contador + 1);
-
-    memcpy(ciudad->nombre, nombre_final, contador);
-    ciudad->nombre[contador + 1] = '\0';
-}
+/**
+ * Crea una nueva lista sacando la ciudad de los elementos
+ * @param lista Lista de donde copiar
+ * @param ciudad_a_sacar Ciudad a sacar
+ */
+TLista copiar_lista(TLista lista, TCiudad ciudad_a_sacar);
 
 void leer_archivo(char *path_archivo, TLista *lista_ciudades) {
     FILE *archivo_ciudades = fopen(path_archivo, "r");
@@ -140,43 +133,117 @@ void mostrar_descendente(TLista lista_ciudades) {
 }
 
 void reducir_horas_manejo(TLista lista_ciudades) {
-    TColaCP colaCP = crear_cola_CP(&prioridad_ascendente);
-    TPosicion actual = l_primera(lista_ciudades);
-    TEntrada entrada = NULL;
-    int *distancia_ciudad;
-    TCiudad ciudad_lista;
+    TColaCP colaCP;
+    TPosicion cursor_lista_aux;
+    TLista lista_aux = copiar_lista(lista_ciudades, ELE_NULO), lista_aux_vieja;
+    TCiudad posicion_actual = ciudad_actual, ciudad_cercana = ELE_NULO;
+    TEntrada entrada, entrada_ciudad_cercana;
+    int *clave;
+    int total_recorrido = 0;
 
-    while (actual != POS_NULA) {
-        entrada = (TEntrada) malloc(sizeof(struct entrada));
-        distancia_ciudad = (int *) malloc(sizeof(int));
+    for(int i = 0; i < l_size(lista_ciudades); i++) {
+        cursor_lista_aux = l_primera(lista_aux);
 
-        ciudad_lista = l_recuperar(lista_ciudades, actual);
-        *distancia_ciudad = distancia(ciudad_lista, ciudad_actual);
+        colaCP = crear_cola_CP(&prioridad_ascendente);
+        while(cursor_lista_aux != POS_NULA) {
+            entrada = (TEntrada) malloc(sizeof(struct entrada));
+            clave = (int *) malloc(sizeof(int));
 
-        entrada->clave = distancia_ciudad;
-        entrada->valor = ciudad_lista;
+            *clave = distancia(cursor_lista_aux->elemento, posicion_actual);
 
-        cp_insertar(colaCP, entrada);
+            entrada->clave = clave;
+            entrada->valor = cursor_lista_aux->elemento;
 
-        actual = l_siguiente(lista_ciudades, actual);
+            cp_insertar(colaCP, entrada);
+
+            cursor_lista_aux = l_siguiente(lista_aux, cursor_lista_aux);
+        }
+
+        entrada_ciudad_cercana = cp_eliminar(colaCP);
+
+        ciudad_cercana = entrada_ciudad_cercana->valor;
+
+        printf("%i. %s\n", i + 1, ciudad_cercana->nombre);
+
+        total_recorrido += *((int *) entrada_ciudad_cercana->clave);
+
+        posicion_actual = ciudad_cercana;
+
+        cp_destruir(colaCP);
+
+        lista_aux_vieja = lista_aux;
+        lista_aux = copiar_lista(lista_aux_vieja, ciudad_cercana);
+
+        l_destruir(&lista_aux_vieja);
     }
 
-    int contador = 1;
-    int total_distancia = 0;
+    printf("Total recorrido: %i", total_recorrido);
 
-    while(cp_size(colaCP) != 0) {
-        TEntrada elemento_ciudad = cp_eliminar(colaCP);
-        TCiudad ciudad_recuperada = elemento_ciudad->valor;
+    l_destruir(&lista_aux);
+}
 
-        total_distancia += *((int*) elemento_ciudad->clave);
+int distancia(TCiudad ciudad1, TCiudad ciudad2) {
+    return abs(ciudad2->pos_x - ciudad1->pos_x) + abs(ciudad2->pos_y - ciudad1->pos_y);
+}
 
-        char *nombre = ciudad_recuperada->nombre;
-        printf("%i. %s\n", contador, nombre);
+int prioridad_descendente(TEntrada entrada1, TEntrada entrada2) {
+    int clave1 = *((int *) entrada1->clave);
+    int clave2 = *((int *) entrada2->clave);
+
+    if (clave1 > clave2) {
+        return 1;
+    } else if (clave1 < clave2) {
+        return -1;
+    } else {
+        return 0;
+    }
+}
+
+int prioridad_ascendente(TEntrada entrada1, TEntrada entrada2){
+    int clave1 = *((int *) entrada1->clave);
+    int clave2 = *((int *) entrada2->clave);
+    if (clave1 < clave2) {
+        return 1;
+    } else if (clave1 > clave2) {
+        return -1;
+    } else {
+        return 0;
+    }
+}
+
+void leer_nombre(TCiudad ciudad, FILE *archivo) {
+    char nombre_final[100];
+    int caracter_leido = fgetc(archivo);
+    unsigned int contador = 0;
+
+    while (caracter_leido != ';' && contador < 100) {
+        nombre_final[contador] = (char) caracter_leido;
 
         contador++;
+        caracter_leido = fgetc(archivo);
     }
 
-    printf("Total recorrido: %i", total_distancia);
+    ciudad->nombre = (char *) malloc(contador + 1);
 
-    cp_destruir(colaCP);
+    memcpy(ciudad->nombre, nombre_final, contador);
+    ciudad->nombre[contador + 1] = '\0';
+}
+
+TLista copiar_lista(TLista lista, TCiudad ciudad_a_sacar) {
+    TPosicion cursor = l_primera(lista), cursor_lista_nueva = POS_NULA, siguiente;
+    TLista lista_nueva = crear_lista();
+
+    while (cursor != POS_NULA) {
+        if (cursor->elemento != ciudad_a_sacar) {
+            siguiente = (cursor_lista_nueva == POS_NULA) ? POS_NULA : l_siguiente(lista_nueva, cursor_lista_nueva);
+
+            l_insertar(&lista_nueva, siguiente, cursor->elemento);
+
+            cursor_lista_nueva = l_ultima(lista_nueva);
+        }
+
+        cursor = l_siguiente(lista_nueva, cursor);
+    }
+
+    return lista_nueva;
 }

@@ -1,94 +1,36 @@
 #include "colacp.h"
 
-TNodo ultimo_nodo_padre(TColaCP cola) {
-    TNodo nodo_actual, nodo_ultimo = ELE_NULO;
-    TLista lista_nodos = crear_lista();
-    boolean encontre = FALSE;
-
-    l_insertar(&lista_nodos, l_primera(lista_nodos), cola->raiz);
-
-    // Lo hago hasta que se termine la lista o que lo encuentre al ultimo nodo
-    while(l_size(lista_nodos) != 0 || !encontre) {
-        nodo_actual = l_recuperar(lista_nodos, l_primera(lista_nodos));
-        l_eliminar(&lista_nodos, l_primera(lista_nodos));
-
-        if (nodo_actual != ELE_NULO) {
-            // Si tiene hijos nulos encontro el padre
-            if (nodo_actual->hijo_izquierdo == ELE_NULO) {
-                nodo_ultimo = nodo_actual;
-                encontre = TRUE;
-            } else if (nodo_actual->hijo_derecho == ELE_NULO){
-                nodo_ultimo = nodo_actual;
-                encontre = TRUE;
-            } else {
-                // Agrega los hijos a la lista
-                TPosicion ultima = l_ultima(lista_nodos);
-
-                if (ultima == POS_NULA) {
-                    l_insertar(&lista_nodos, POS_NULA, nodo_actual->hijo_izquierdo);
-                    l_insertar(&lista_nodos, l_ultima(lista_nodos)->celda_siguiente, nodo_actual->hijo_derecho);
-                } else {
-                    l_insertar(&lista_nodos, l_ultima(lista_nodos)->celda_siguiente, nodo_actual->hijo_izquierdo);
-                    l_insertar(&lista_nodos, l_ultima(lista_nodos)->celda_siguiente, nodo_actual->hijo_derecho);
-                }
-            }
-        }
-    }
-
-    l_destruir(&lista_nodos);
-
-    return nodo_ultimo;
-}
-
-void burbujear_arriba(TNodo raiz, TNodo nodo) {
-    TNodo nodo_actual = nodo;
-    while(nodo_actual != raiz) {
-        if (funcion_prioridad(nodo_actual->entrada, nodo_actual->padre->entrada) == 1) {
-            TEntrada entrada_aux;
-
-            entrada_aux = nodo_actual->padre->entrada;
-            nodo_actual->padre->entrada = nodo_actual->entrada;
-            nodo_actual->entrada = entrada_aux;
-        }
-
-        nodo_actual = nodo_actual->padre;
-    }
-}
-
-void burbujear_abajo(TColaCP cola) {
-    boolean seguir = TRUE;
-    TNodo nodo_actual = cola->raiz, nodo_minimo = NULL;
-    TEntrada aux_entrada = NULL;
-
-    while(seguir) {
-        if (nodo_actual->hijo_izquierdo == ELE_NULO) {
-            seguir = FALSE;
-        } else {
-            // Minimo de los hijos
-            if (nodo_actual->hijo_derecho != ELE_NULO) {
-                if (funcion_prioridad(nodo_actual->hijo_izquierdo->entrada, nodo_actual->hijo_derecho->entrada) == 1) {
-                    nodo_minimo = nodo_actual->hijo_izquierdo;
-                } else {
-                    nodo_minimo = nodo_actual->hijo_derecho;
-                }
-            } else {
-                nodo_minimo = nodo_actual->hijo_izquierdo;
-            }
-
-            if (funcion_prioridad(nodo_actual->entrada, nodo_minimo->entrada) == -1) {
-                aux_entrada = nodo_actual->entrada;
-
-                nodo_actual->entrada = nodo_minimo->entrada;
-                nodo_minimo->entrada = aux_entrada;
-            } else {
-                seguir = FALSE;
-            }
-        }
-    }
-}
+/**
+ * Metodos Privados
+ */
 
 /**
-* Metodos
+ * Devuelve el primer nodo que tenga hijos nulos haciendo recorrido por niveles
+ * @param cola Cola de donde sacar el el hijo con hijos nulos
+ * @return Primer nodo que tenga por lo menos un hijo nulo
+ */
+TNodo ultimo_nodo_padre(TColaCP cola);
+
+/**
+ * Burbujea a partir del nodo para arriba
+ * @param nodo Nodo por donde empezar a burbujear
+ */
+void burbujear_arriba(TNodo nodo);
+
+/**
+ * Burbujea a partir de la raiz para abajo
+ * @param raiz Raiz de la cola para burbujear
+ */
+void burbujear_abajo(TNodo raiz);
+
+/**
+ * Destruye el arbol dada su raiz de manera recursiva
+ * @param raiz Raiz del arbol para empezar a destruir
+ */
+void destruir_arbol(TNodo raiz);
+
+/**
+* Metodos Publicos
 **/
 
 TColaCP crear_cola_CP(int (*f)(TEntrada, TEntrada)) {
@@ -130,7 +72,7 @@ int cp_insertar(TColaCP cola, TEntrada entr) {
             padre_ultimo_nodo->hijo_derecho = nuevo_nodo;
         }
 
-        burbujear_arriba(cola->raiz, nuevo_nodo);
+        burbujear_arriba(nuevo_nodo);
     }
 
     cola->cantidad_elementos++;
@@ -174,7 +116,7 @@ TEntrada cp_eliminar(TColaCP cola) {
         }
     }
 
-    burbujear_abajo(cola);
+    burbujear_abajo(cola->raiz);
 
     cola->cantidad_elementos--;
 
@@ -194,12 +136,110 @@ int cp_destruir(TColaCP cola) {
         exit(CCP_NO_INI);
     }
 
-    while(cp_size(cola) != 0) {
-        TEntrada entrada_eliminada = cp_eliminar(cola);
-        free(entrada_eliminada->clave);
-        free(entrada_eliminada->valor);
-        free(entrada_eliminada);
-    }
+    destruir_arbol(cola->raiz);
+
+    free(cola);
 
     return TRUE;
+}
+
+TNodo ultimo_nodo_padre(TColaCP cola) {
+    TNodo nodo_actual, nodo_ultimo = ELE_NULO;
+    TLista lista_nodos = crear_lista();
+    boolean encontre = FALSE;
+
+    l_insertar(&lista_nodos, l_primera(lista_nodos), cola->raiz);
+
+    // Lo hago hasta que se termine la lista o que lo encuentre al ultimo nodo
+    while(l_size(lista_nodos) != 0 || !encontre) {
+        nodo_actual = l_recuperar(lista_nodos, l_primera(lista_nodos));
+        l_eliminar(&lista_nodos, l_primera(lista_nodos));
+
+        if (nodo_actual != ELE_NULO) {
+            // Si tiene hijos nulos encontro el padre
+            if (nodo_actual->hijo_izquierdo == ELE_NULO) {
+                nodo_ultimo = nodo_actual;
+                encontre = TRUE;
+            } else if (nodo_actual->hijo_derecho == ELE_NULO){
+                nodo_ultimo = nodo_actual;
+                encontre = TRUE;
+            } else {
+                // Agrega los hijos a la lista
+                TPosicion ultima = l_ultima(lista_nodos);
+
+                if (ultima == POS_NULA) {
+                    l_insertar(&lista_nodos, POS_NULA, nodo_actual->hijo_izquierdo);
+                    l_insertar(&lista_nodos, l_ultima(lista_nodos)->celda_siguiente, nodo_actual->hijo_derecho);
+                } else {
+                    l_insertar(&lista_nodos, l_ultima(lista_nodos)->celda_siguiente, nodo_actual->hijo_izquierdo);
+                    l_insertar(&lista_nodos, l_ultima(lista_nodos)->celda_siguiente, nodo_actual->hijo_derecho);
+                }
+            }
+        }
+    }
+
+    l_destruir(&lista_nodos);
+
+    return nodo_ultimo;
+}
+
+void burbujear_arriba(TNodo nodo) {
+    TNodo nodo_actual = nodo;
+    while(nodo_actual->padre != ELE_NULO) {
+        if (funcion_prioridad(nodo_actual->entrada, nodo_actual->padre->entrada) == 1) {
+            TEntrada entrada_aux;
+
+            entrada_aux = nodo_actual->padre->entrada;
+            nodo_actual->padre->entrada = nodo_actual->entrada;
+            nodo_actual->entrada = entrada_aux;
+        }
+
+        nodo_actual = nodo_actual->padre;
+    }
+}
+
+void burbujear_abajo(TNodo raiz) {
+    boolean seguir = TRUE;
+    TNodo nodo_actual = raiz, nodo_minimo = NULL;
+    TEntrada aux_entrada = NULL;
+
+    while(seguir) {
+        if (nodo_actual->hijo_izquierdo == ELE_NULO) {
+            seguir = FALSE;
+        } else {
+            // Minimo de los hijos
+            if (nodo_actual->hijo_derecho != ELE_NULO) {
+                if (funcion_prioridad(nodo_actual->hijo_izquierdo->entrada, nodo_actual->hijo_derecho->entrada) == 1) {
+                    nodo_minimo = nodo_actual->hijo_izquierdo;
+                } else {
+                    nodo_minimo = nodo_actual->hijo_derecho;
+                }
+            } else {
+                nodo_minimo = nodo_actual->hijo_izquierdo;
+            }
+
+            if (funcion_prioridad(nodo_actual->entrada, nodo_minimo->entrada) == -1) {
+                aux_entrada = nodo_actual->entrada;
+
+                nodo_actual->entrada = nodo_minimo->entrada;
+                nodo_minimo->entrada = aux_entrada;
+            } else {
+                seguir = FALSE;
+            }
+        }
+    }
+}
+
+void destruir_arbol(TNodo raiz) {
+    if (raiz != ELE_NULO) {
+        if (raiz->hijo_izquierdo != ELE_NULO) {
+            destruir_arbol(raiz->hijo_izquierdo);
+        }
+        if (raiz->hijo_derecho != ELE_NULO) {
+            destruir_arbol(raiz->hijo_derecho);
+        }
+
+        free(raiz->entrada);
+        free(raiz);
+    }
 }

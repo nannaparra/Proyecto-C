@@ -40,7 +40,7 @@ int (*funcion_prioridad)(TEntrada, TEntrada);
  * @param f Funcion de prioridad
  * @return TColaCP Retorna una cola con prioridad
  */
-TColaCP crear_cola_CP(int (*f)(TEntrada, TEntrada));
+void crear_cola_CP(TColaCP *cola, int (*f)(TEntrada, TEntrada));
 
 /**
  * Inserta un elemento a la cola pasada por parametro

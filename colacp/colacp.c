@@ -33,15 +33,13 @@ void destruir_arbol(TNodo raiz);
 * Metodos Publicos
 **/
 
-TColaCP crear_cola_CP(int (*f)(TEntrada, TEntrada)) {
+void crear_cola_CP(TColaCP *cola, int (*f)(TEntrada, TEntrada)) {
     funcion_prioridad = f;
 
-    TColaCP colaCP = (TColaCP) malloc(sizeof(struct cola_con_prioridad));
+    *cola = (TColaCP) malloc(sizeof(struct cola_con_prioridad));
 
-    colaCP->raiz = ELE_NULO;
-    colaCP->cantidad_elementos = 0;
-
-    return colaCP;
+    (*cola)->raiz = ELE_NULO;
+    (*cola)->cantidad_elementos = 0;
 }
 
 int cp_insertar(TColaCP cola, TEntrada entr) {

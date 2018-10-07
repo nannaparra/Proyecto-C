@@ -71,7 +71,8 @@ void leer_archivo(char *path_archivo, TLista *lista_ciudades) {
 }
 
 void mostrar_ascendente(TLista lista_ciudades){
-    TColaCP cola = crear_cola_CP(&prioridad_ascendente);
+    TColaCP cola;
+    crear_cola_CP(&cola, &prioridad_ascendente);
     TPosicion pos=l_primera(lista_ciudades);
     int *dist;
     while(pos!=POS_NULA){
@@ -96,7 +97,8 @@ void mostrar_ascendente(TLista lista_ciudades){
 }
 
 void mostrar_descendente(TLista lista_ciudades) {
-    TColaCP colaCP = crear_cola_CP(&prioridad_descendente);
+    TColaCP colaCP;
+    crear_cola_CP(&colaCP, &prioridad_descendente);
     TPosicion actual = l_primera(lista_ciudades);
     TEntrada entrada = NULL;
     int *distancia_ciudad;
@@ -144,7 +146,7 @@ void reducir_horas_manejo(TLista lista_ciudades) {
     for(int i = 0; i < l_size(lista_ciudades); i++) {
         cursor_lista_aux = l_primera(lista_aux);
 
-        colaCP = crear_cola_CP(&prioridad_ascendente);
+        crear_cola_CP(&colaCP, &prioridad_ascendente);
         while(cursor_lista_aux != POS_NULA) {
             entrada = (TEntrada) malloc(sizeof(struct entrada));
             clave = (int *) malloc(sizeof(int));

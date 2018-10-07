@@ -6,26 +6,26 @@
  */
 void destruir_celda_recursivo(TPosicion posicion);
 
-
-TLista crear_lista(){
-    TLista lista_nueva=(TLista)malloc(sizeof(struct celda));
-    lista_nueva->elemento=NULL;
-    lista_nueva->celda_anterior=POS_NULA;
-    lista_nueva->celda_siguiente=POS_NULA;
-    return lista_nueva;
+void crear_lista(TLista *lista){
+    lista=(TLista*) malloc(sizeof(TLista*));
+    TLista lista_nueva=NULL;
+    (*lista)=lista_nueva;
 }
 
-int l_insertar(TLista * lista, TPosicion pos, TElemento elem){
+int l_insertar(TLista *lista, TPosicion pos, TElemento elem){
   if(lista==NULL)
      exit(LST_NO_INI);
   int exito;
-
   if(pos==POS_NULA){
-     if(((*lista)->elemento)==NULL)
-        (*lista)->elemento=elem;
+      TPosicion posicion_aux=(TPosicion)malloc(sizeof(struct celda));
+      posicion_aux->elemento=elem;
+     if((*lista)==NULL){
+        (*lista)=(TLista)malloc(sizeof(struct celda));
+        posicion_aux->celda_siguiente=POS_NULA;
+        posicion_aux->celda_anterior=POS_NULA;
+        *lista=posicion_aux;
+     }
      else{
-        TPosicion posicion_aux=(TPosicion)malloc(sizeof(struct celda));
-        posicion_aux->elemento=elem;
         posicion_aux->celda_siguiente=(*lista);
         posicion_aux->celda_anterior=POS_NULA;
         (*lista)->celda_anterior=posicion_aux;
@@ -59,16 +59,18 @@ int l_eliminar(TLista * lista, TPosicion pos){
     if(pos==POS_NULA)
        exito=FALSE;
     else{
-        if((pos->celda_anterior)==POS_NULA){
+       if((pos->celda_anterior)==POS_NULA){
            if((pos->celda_siguiente)==POS_NULA){
-               pos->elemento=NULL;
+               free(pos);
+               (*lista)=NULL;
            }
            else{
            pos->celda_siguiente->celda_anterior=POS_NULA;
            (*lista)=pos->celda_siguiente;
            free(pos);
            }
-       } else {
+       }
+       else{
           if((pos->celda_siguiente)==POS_NULA){
              pos->celda_anterior->celda_siguiente=POS_NULA;
              free(pos);
@@ -85,18 +87,18 @@ int l_eliminar(TLista * lista, TPosicion pos){
 }
 
 TPosicion l_primera(TLista lista){
+  //if(&lista==NULL)
+    //exit(LST_NO_INI);
     if(lista==NULL)
-     exit(LST_NO_INI);
-    if(lista->elemento==NULL)
        return POS_NULA;
     else
        return lista;
 }
 
 TPosicion l_ultima(TLista lista){
+    //if(&lista==NULL)
+    // exit(LST_NO_INI);
     if(lista==NULL)
-     exit(LST_NO_INI);
-    if(lista->elemento==NULL)
        return POS_NULA;
     else{
       TPosicion posicion=lista;
@@ -108,8 +110,8 @@ TPosicion l_ultima(TLista lista){
 }
 
 TPosicion l_anterior(TLista lista, TPosicion pos){
-    if(lista==NULL)
-     exit(LST_NO_INI);
+   // if(&lista==NULL)
+     // exit(LST_NO_INI);
     if(pos==lista)
         return POS_NULA;
     else
@@ -117,8 +119,8 @@ TPosicion l_anterior(TLista lista, TPosicion pos){
 }
 
 TPosicion l_siguiente(TLista lista, TPosicion pos){
-    if(lista==NULL)
-     exit(LST_NO_INI);
+    //if(&lista==NULL)
+     // exit(LST_NO_INI);
     if(pos==l_ultima(lista))
        return POS_NULA;
     else
@@ -126,8 +128,8 @@ TPosicion l_siguiente(TLista lista, TPosicion pos){
 }
 
 TElemento l_recuperar(TLista lista, TPosicion pos){
-    if(lista==NULL)
-     exit(LST_NO_INI);
+   // if(&lista==NULL)
+    //   exit(LST_NO_INI);
     if(pos==POS_NULA)
        return ELE_NULO;
     else
@@ -135,10 +137,10 @@ TElemento l_recuperar(TLista lista, TPosicion pos){
 }
 
 int l_size(TLista lista){
-    if(lista==NULL)
-     exit(LST_NO_INI);
+    //if(&lista==NULL)
+      // exit(LST_NO_INI);
     int size=0;
-    if(lista->elemento==NULL)
+    if(lista==NULL)
        return size;
     else{
        TPosicion posicion=lista;
@@ -153,18 +155,9 @@ int l_size(TLista lista){
 int l_destruir(TLista * lista){
     if(lista==NULL)
        exit(LST_NO_INI);
-
     destruir_celda_recursivo(*lista);
-    /*TPosicion posicion=(*lista);
-    TPosicion aux=posicion;
-    while(aux!=POS_NULA){
-        aux=aux->celda_siguiente;
-        free(posicion);
-        posicion=aux;
-    }
-    //free(*lista);*/
-
     lista = POS_NULA;
+
     return TRUE;
 }
 
@@ -173,7 +166,6 @@ void destruir_celda_recursivo(TPosicion posicion) {
         if (posicion->celda_siguiente != POS_NULA) {
             destruir_celda_recursivo(posicion->celda_siguiente);
         }
-
         free(posicion);
     }
 }

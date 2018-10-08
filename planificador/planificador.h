@@ -36,3 +36,8 @@ void mostrar_descendente(TLista);
  * @param Lista de las ciudades
  */
 void reducir_horas_manejo(TLista);
+
+/**
+ * Destruye la ciudades y la lista
+ */
+void destruir_lista_ciudad(TLista *);

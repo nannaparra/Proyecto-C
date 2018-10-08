@@ -6,11 +6,13 @@
  */
 void destruir_celda_recursivo(TPosicion posicion);
 
-TLista crear_lista(TLista *lista){
-    lista=(TLista*) malloc(sizeof(TLista*));
-    TLista lista_nueva=NULL;
+//TLista crear_lista(TLista *lista){
+void crear_lista(TLista *lista) {
+    //lista = (TLista *) malloc(sizeof(TLista *));
+    (*lista) = ELE_NULO;
+    /*
     (*lista)=lista_nueva;
-    return lista_nueva;
+    return lista_nueva;*/
 }
 
 int l_insertar(TLista *lista, TPosicion pos, TElemento elem){
@@ -167,6 +169,8 @@ void destruir_celda_recursivo(TPosicion posicion) {
         if (posicion->celda_siguiente != POS_NULA) {
             destruir_celda_recursivo(posicion->celda_siguiente);
         }
+        posicion->celda_siguiente = POS_NULA;
+        posicion->celda_anterior = POS_NULA;
         free(posicion);
     }
 }

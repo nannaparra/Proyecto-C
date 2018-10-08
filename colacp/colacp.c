@@ -144,16 +144,16 @@ int cp_destruir(TColaCP cola) {
 
 TNodo ultimo_nodo_padre(TColaCP cola) {
     TNodo nodo_actual, nodo_ultimo = ELE_NULO;
-    TLista lista_nodos;
-    crear_lista(&lista_nodos);
+    TLista* lista_nodos = (TLista *) malloc(sizeof(TLista *));
+    crear_lista(lista_nodos);
     boolean encontre = FALSE;
 
-    l_insertar(&lista_nodos, l_primera(lista_nodos), cola->raiz);
+    l_insertar(lista_nodos, l_primera(*lista_nodos), cola->raiz);
 
     // Lo hago hasta que se termine la lista o que lo encuentre al ultimo nodo
-    while(l_size(lista_nodos) != 0 || !encontre) {
-        nodo_actual = l_recuperar(lista_nodos, l_primera(lista_nodos));
-        l_eliminar(&lista_nodos, l_primera(lista_nodos));
+    while(l_size(*lista_nodos) != 0 || !encontre) {
+        nodo_actual = l_recuperar(*lista_nodos, l_primera(*lista_nodos));
+        l_eliminar(lista_nodos, l_primera(*lista_nodos));
 
         if (nodo_actual != ELE_NULO) {
             // Si tiene hijos nulos encontro el padre
@@ -165,20 +165,20 @@ TNodo ultimo_nodo_padre(TColaCP cola) {
                 encontre = TRUE;
             } else {
                 // Agrega los hijos a la lista
-                TPosicion ultima = l_ultima(lista_nodos);
+                TPosicion ultima = l_ultima(*lista_nodos);
 
                 if (ultima == POS_NULA) {
-                    l_insertar(&lista_nodos, POS_NULA, nodo_actual->hijo_izquierdo);
-                    l_insertar(&lista_nodos, l_ultima(lista_nodos)->celda_siguiente, nodo_actual->hijo_derecho);
+                    l_insertar(lista_nodos, POS_NULA, nodo_actual->hijo_izquierdo);
+                    l_insertar(lista_nodos, l_ultima(*lista_nodos)->celda_siguiente, nodo_actual->hijo_derecho);
                 } else {
-                    l_insertar(&lista_nodos, l_ultima(lista_nodos)->celda_siguiente, nodo_actual->hijo_izquierdo);
-                    l_insertar(&lista_nodos, l_ultima(lista_nodos)->celda_siguiente, nodo_actual->hijo_derecho);
+                    l_insertar(lista_nodos, l_ultima(*lista_nodos)->celda_siguiente, nodo_actual->hijo_izquierdo);
+                    l_insertar(lista_nodos, l_ultima(*lista_nodos)->celda_siguiente, nodo_actual->hijo_derecho);
                 }
             }
         }
     }
 
-    l_destruir(&lista_nodos);
+    l_destruir(lista_nodos);
 
     return nodo_ultimo;
 }

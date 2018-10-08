@@ -17,7 +17,8 @@ struct celda * celda_siguiente;
 };
 
 
-TLista crear_lista(TLista *lista); //Crea y retorna una lista vacía.
+//TLista crear_lista(TLista *lista); //Crea y retorna una lista vacía.
+void crear_lista(TLista *lista); //Crea y retorna una lista vacía.
 
 int l_insertar(TLista * lista, TPosicion pos, TElemento elem); /*Agrega el elemento elem en la posición pos,
 dentro de la lista. Si pos es POS_NULA, insertar el elemento en la primera posición de la lista. Retorna

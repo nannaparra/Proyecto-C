@@ -138,7 +138,7 @@ void reducir_horas_manejo(TLista lista_ciudades) {
     TColaCP colaCP;
     TPosicion cursor_lista_aux;
     TLista lista_aux = copiar_lista(lista_ciudades, ELE_NULO), lista_aux_vieja;
-    TCiudad posicion_actual = ciudad_actual, ciudad_cercana = ELE_NULO;
+    TCiudad posicion_actual = ciudad_actual, ciudad_cercana;
     TEntrada entrada, entrada_ciudad_cercana;
     int *clave;
     int total_recorrido = 0;
@@ -233,19 +233,37 @@ void leer_nombre(TCiudad ciudad, FILE *archivo) {
 
 TLista copiar_lista(TLista lista, TCiudad ciudad_a_sacar) {
     TPosicion cursor = l_primera(lista), cursor_lista_nueva = POS_NULA, siguiente;
-    TLista lista_nueva = crear_lista();
+    TLista *lista_nueva = (TLista *) malloc(sizeof(TLista *));
+    crear_lista(lista_nueva);
 
     while (cursor != POS_NULA) {
         if (cursor->elemento != ciudad_a_sacar) {
-            siguiente = (cursor_lista_nueva == POS_NULA) ? POS_NULA : l_siguiente(lista_nueva, cursor_lista_nueva);
+            siguiente = (cursor_lista_nueva == POS_NULA) ? POS_NULA : l_siguiente(*lista_nueva, cursor_lista_nueva);
 
-            l_insertar(&lista_nueva, siguiente, cursor->elemento);
+            l_insertar(lista_nueva, siguiente, cursor->elemento);
 
-            cursor_lista_nueva = l_ultima(lista_nueva);
+            cursor_lista_nueva = l_ultima(*lista_nueva);
         }
 
-        cursor = l_siguiente(lista_nueva, cursor);
+        cursor = l_siguiente(*lista_nueva, cursor);
     }
 
-    return lista_nueva;
+    return *lista_nueva;
+}
+
+void destruir_lista_ciudad(TLista* lista) {
+    if (l_size(*lista) != 0) {
+        TPosicion cursor = l_primera(*lista);
+
+        while(cursor != ELE_NULO) {
+            TCiudad ciudad = l_recuperar(*lista, cursor);
+
+            free(ciudad->nombre);
+            free(ciudad);
+
+            cursor = cursor->celda_siguiente;
+        }
+    }
+
+    l_destruir(lista);
 }

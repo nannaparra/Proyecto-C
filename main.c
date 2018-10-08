@@ -10,9 +10,10 @@ int main(int argc, char *argv[]) {
         printf("Para ejecutarlo use la siguiente sintaxis\n");
         printf("./planificador <archivo_texto>\n");
     } else {
-        TLista *lista=NULL;
-        TLista lista_ciudades=crear_lista(lista);
-        leer_archivo(argv[1], &lista_ciudades);
+        TLista* lista = (TLista*) malloc(sizeof(TLista*));
+        //TLista lista_ciudades=crear_lista(lista);
+        crear_lista(lista);
+        leer_archivo(argv[1], lista);
         int opcion;
         printf("**************************************************\n");
         printf("|                                                |\n");
@@ -28,19 +29,24 @@ int main(int argc, char *argv[]) {
         scanf("%i", &opcion);
         switch (opcion) {
             case 1: {
-                mostrar_ascendente(lista_ciudades);
+                //mostrar_ascendente(lista_ciudades);
+                mostrar_ascendente(*lista);
                 break;
             }
             case 2: {
-                mostrar_descendente(lista_ciudades);
+                //mostrar_descendente(lista_ciudades);
+                mostrar_descendente(*lista);
                 break;
             }
             case 3: {
-                reducir_horas_manejo(lista_ciudades);
+                //reducir_horas_manejo(lista_ciudades);
+                reducir_horas_manejo(*lista);
                 break;
             }
             case 4: {
-                l_destruir(&lista_ciudades);
+                //l_destruir(&lista_ciudades);
+                //l_destruir(lista);
+                destruir_lista_ciudad(lista);
                 exit(EXIT_SUCCESS);
             }
             default:
@@ -48,7 +54,9 @@ int main(int argc, char *argv[]) {
                 break;
         }
 
-        l_destruir(&lista_ciudades);
+        //l_destruir(&lista_ciudades);
+        //l_destruir(lista);
+        destruir_lista_ciudad(lista);
     }
     return 0;
 }

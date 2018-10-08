@@ -92,29 +92,30 @@ TEntrada cp_eliminar(TColaCP cola) {
         free(nodo_ultimo_padre->hijo_derecho);
 
         nodo_ultimo_padre->hijo_derecho = ELE_NULO;
-    } else {
-        if (nodo_ultimo_padre->hijo_izquierdo == ELE_NULO) {
-            TNodo padre = nodo_ultimo_padre->padre;
+    } else if (nodo_ultimo_padre->hijo_izquierdo == ELE_NULO) {
+        TNodo padre = nodo_ultimo_padre->padre;
 
-            if (padre == ELE_NULO) {
-                free(nodo_ultimo_padre);
-            } else {
-                cola->raiz->entrada = padre->hijo_derecho->entrada;
-
-                free(nodo_ultimo_padre->padre->hijo_derecho);
-
-                nodo_ultimo_padre->padre->hijo_derecho = ELE_NULO;
-            }
+        if (padre == ELE_NULO) {
+            free(nodo_ultimo_padre);
+            cola->raiz = ELE_NULO;
         } else {
-            cola->raiz->entrada = nodo_ultimo_padre->hijo_izquierdo->entrada;
+            cola->raiz->entrada = padre->hijo_derecho->entrada;
 
-            free(nodo_ultimo_padre->hijo_izquierdo);
+            free(nodo_ultimo_padre->padre->hijo_derecho);
 
-            nodo_ultimo_padre->hijo_izquierdo = ELE_NULO;
+            nodo_ultimo_padre->padre->hijo_derecho = ELE_NULO;
         }
+    } else {
+        cola->raiz->entrada = nodo_ultimo_padre->hijo_izquierdo->entrada;
+
+        free(nodo_ultimo_padre->hijo_izquierdo);
+
+        nodo_ultimo_padre->hijo_izquierdo = ELE_NULO;
     }
 
-    burbujear_abajo(cola->raiz);
+    if (cola->raiz != ELE_NULO) {
+        burbujear_abajo(cola->raiz);
+    }
 
     cola->cantidad_elementos--;
 
@@ -143,7 +144,8 @@ int cp_destruir(TColaCP cola) {
 
 TNodo ultimo_nodo_padre(TColaCP cola) {
     TNodo nodo_actual, nodo_ultimo = ELE_NULO;
-    TLista lista_nodos = crear_lista();
+    TLista lista_nodos;
+    crear_lista(&lista_nodos);
     boolean encontre = FALSE;
 
     l_insertar(&lista_nodos, l_primera(lista_nodos), cola->raiz);

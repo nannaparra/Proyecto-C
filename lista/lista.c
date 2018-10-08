@@ -6,10 +6,11 @@
  */
 void destruir_celda_recursivo(TPosicion posicion);
 
-void crear_lista(TLista *lista){
+TLista crear_lista(TLista *lista){
     lista=(TLista*) malloc(sizeof(TLista*));
     TLista lista_nueva=NULL;
     (*lista)=lista_nueva;
+    return lista_nueva;
 }
 
 int l_insertar(TLista *lista, TPosicion pos, TElemento elem){

@@ -10,7 +10,8 @@ int main(int argc, char *argv[]) {
         printf("Para ejecutarlo use la siguiente sintaxis\n");
         printf("./planificador <archivo_texto>\n");
     } else {
-        TLista lista_ciudades = crear_lista();
+        TLista *lista=NULL;
+        TLista lista_ciudades=crear_lista(lista);
         leer_archivo(argv[1], &lista_ciudades);
         int opcion;
         printf("**************************************************\n");

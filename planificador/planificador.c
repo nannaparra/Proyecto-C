@@ -105,6 +105,9 @@ void mostrar_ascendente(TLista lista_ciudades){
         printf("%i. %s\n",contador,nombre);
 
         contador++;
+
+        free(elemento_ciudad->clave);
+        free(elemento_ciudad);
     }
 
     cp_destruir(cola);
@@ -144,6 +147,9 @@ void mostrar_descendente(TLista lista_ciudades) {
         printf("%i. %s\n", contador, nombre);
 
         contador++;
+
+        free(elemento_ciudad->clave);
+        free(elemento_ciudad);
     }
 
     cp_destruir(colaCP);
@@ -185,6 +191,9 @@ void reducir_horas_manejo(TLista lista_ciudades) {
         total_recorrido += *((int *) entrada_ciudad_cercana->clave);
 
         posicion_actual = ciudad_cercana;
+
+        free(entrada_ciudad_cercana->clave);
+        free(entrada_ciudad_cercana);
 
         cp_destruir(colaCP);
 

@@ -223,6 +223,8 @@ void destruir_lista_ciudad(TLista* lista) {
     }
 
     l_destruir(lista);
+
+    free(ciudad_actual);
 }
 
 int distancia(TCiudad ciudad1, TCiudad ciudad2) {

@@ -73,32 +73,47 @@ void leer_archivo(char *path_archivo, TLista *lista_ciudades) {
 void mostrar_ascendente(TLista lista_ciudades){
     TColaCP cola;
     crear_cola_CP(&cola, &prioridad_ascendente);
+
     TPosicion pos=l_primera(lista_ciudades);
+
     int *dist;
+
     while(pos!=POS_NULA){
         TCiudad actual=pos->elemento;
+
         TEntrada entr=(TEntrada)malloc(sizeof(struct entrada));
+
         dist = (int *) malloc(sizeof(int));
         *dist=distancia(actual,ciudad_actual);
+
         entr->clave=dist;
         entr->valor=actual;
+
         cp_insertar(cola,entr);
+
         pos=l_siguiente(lista_ciudades,pos);
     }
+
     int contador = 1;
+
     while(cp_size(cola)!=0) {
         TEntrada elemento_ciudad = cp_eliminar(cola);
+
         TCiudad ciudad_recuperada = elemento_ciudad->valor;
+
         char *nombre = ciudad_recuperada->nombre;
         printf("%i. %s\n",contador,nombre);
+
         contador++;
     }
+
     cp_destruir(cola);
 }
 
 void mostrar_descendente(TLista lista_ciudades) {
     TColaCP colaCP;
     crear_cola_CP(&colaCP, &prioridad_descendente);
+
     TPosicion actual = l_primera(lista_ciudades);
     TEntrada entrada = NULL;
     int *distancia_ciudad;
@@ -184,6 +199,23 @@ void reducir_horas_manejo(TLista lista_ciudades) {
     l_destruir(&lista_aux);
 }
 
+void destruir_lista_ciudad(TLista* lista) {
+    if (l_size(*lista) != 0) {
+        TPosicion cursor = l_primera(*lista);
+
+        while(cursor != ELE_NULO) {
+            TCiudad ciudad = l_recuperar(*lista, cursor);
+
+            free(ciudad->nombre);
+            free(ciudad);
+
+            cursor = cursor->celda_siguiente;
+        }
+    }
+
+    l_destruir(lista);
+}
+
 int distancia(TCiudad ciudad1, TCiudad ciudad2) {
     return abs(ciudad2->pos_x - ciudad1->pos_x) + abs(ciudad2->pos_y - ciudad1->pos_y);
 }
@@ -249,21 +281,4 @@ TLista copiar_lista(TLista lista, TCiudad ciudad_a_sacar) {
     }
 
     return *lista_nueva;
-}
-
-void destruir_lista_ciudad(TLista* lista) {
-    if (l_size(*lista) != 0) {
-        TPosicion cursor = l_primera(*lista);
-
-        while(cursor != ELE_NULO) {
-            TCiudad ciudad = l_recuperar(*lista, cursor);
-
-            free(ciudad->nombre);
-            free(ciudad);
-
-            cursor = cursor->celda_siguiente;
-        }
-    }
-
-    l_destruir(lista);
 }

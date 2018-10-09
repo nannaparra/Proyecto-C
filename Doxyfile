@@ -1,0 +1,15 @@
+PROJECT_NAME = planificador
+
+INPUT = . planificador/ lista/ colacp/
+
+FILE_PATTERNS = *.h *.c
+
+OUTPUT_DIRECTORY = doc
+
+GENERATE_HTML = YES
+
+HTML_OUTPUT = html/
+
+HTML_FILE_EXTENSION = .html
+
+GENERATE_LATEX = NO

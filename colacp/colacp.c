@@ -29,10 +29,6 @@ void burbujear_abajo(TNodo raiz);
  */
 void destruir_arbol(TNodo raiz);
 
-/**
-* Metodos Publicos
-**/
-
 void crear_cola_CP(TColaCP *cola, int (*f)(TEntrada, TEntrada)) {
     funcion_prioridad = f;
 

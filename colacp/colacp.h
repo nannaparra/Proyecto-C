@@ -8,37 +8,85 @@
 #include "../constantes.h"
 
 /**
-*   Definicion de tipos
-**/
+ * @file
+ */
+
+/**
+ * Clave
+ */
 typedef void * TClave;
+
+/**
+ * Valor
+ */
 typedef void * TValor;
 
+/**
+ * Entrada
+ */
 typedef struct entrada {
+    /**
+     * Clave de la entrada
+     */
     TClave clave;
+
+    /**
+     * Valor de la entrada
+     */
     TValor valor;
 } * TEntrada;
 
+/**
+ * Nodo
+ */
 typedef struct nodo {
+    /**
+     * Entrada del nodo
+     */
     TEntrada entrada;
+
+    /**
+     * Nodo padre
+     */
     struct nodo * padre;
+
+    /**
+     * Hijo izquierdo
+     */
     struct nodo * hijo_izquierdo;
+
+    /**
+     * Hijo derecho
+     */
     struct nodo * hijo_derecho;
 } * TNodo;
 
+/**
+ * Cola con prioridad
+ */
 typedef struct cola_con_prioridad {
+    /**
+     * Cantidad de elementos
+     */
     unsigned int cantidad_elementos;
+
+    /**
+     * Nodo raiz
+     */
     TNodo raiz;
 } * TColaCP;
 
 /**
-* Variables
-**/
+ * Referencia a la funcion con prioridad
+ * @return 1 si la primera entrada tiene mayor prioridad, 0 si tiene la misma prioridad,
+ * -1 si tiene menos prioridad
+ */
 int (*funcion_prioridad)(TEntrada, TEntrada);
 
 /**
- * Crea la cola con prioridad
+ * Crea la cola con prioridad en la referencia pasada por parametro
+ * @param cola Referencia a la cola
  * @param f Funcion de prioridad
- * @return TColaCP Retorna una cola con prioridad
  */
 void crear_cola_CP(TColaCP *cola, int (*f)(TEntrada, TEntrada));
 

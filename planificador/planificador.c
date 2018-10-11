@@ -203,7 +203,7 @@ void reducir_horas_manejo(TLista lista_ciudades) {
         l_destruir(&lista_aux_vieja);
     }
 
-    printf("Total recorrido: %i", total_recorrido);
+    printf("Total recorrido: %i\n", total_recorrido);
 
     l_destruir(&lista_aux);
 }

@@ -7,7 +7,7 @@ NORMAL=\033[0m
 DIROBJETOS=.objs
 DIRS=$(DIROBJETOS) bin
 
-OBJETOS=$(DIROBJETOS)/main.o $(DIROBJETOS)/planificador/planificador.o $(DIROBJETOS)/lista/lista.o $(DIROBJETOS)/colacp/colacp.o
+OBJETOS=$(DIROBJETOS)/main.o $(DIROBJETOS)/planificador.o $(DIROBJETOS)/lista.o $(DIROBJETOS)/colacp.o
 
 all: planificador
 
@@ -20,7 +20,7 @@ objetos:
 	@$(CC) $(CFLAGS) -c -o $(DIROBJETOS)/colacp.o colacp/colacp.c
 
 	@echo -e "$(VERDE)[60%] Creando objeto planificado.o $(NORMAL)"
-	@$(CC) $(CFLAGS) -c -o $(DIROBJETOS)/planificador.o planificador/planificador.h
+	@$(CC) $(CFLAGS) -c -o $(DIROBJETOS)/planificador.o planificador/planificador.c
 
 	@echo -e "$(VERDE)[80%] Creando objeto main.o $(NORMAL)"
 	@$(CC) $(CFLAGS) -c -o $(DIROBJETOS)/main.o main.c

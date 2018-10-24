@@ -1,0 +1,6 @@
+.objs/
+bin/
+doc/
+cmake-build-debug/
+obj/
+.idea/

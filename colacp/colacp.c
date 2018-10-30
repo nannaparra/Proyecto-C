@@ -175,6 +175,7 @@ TNodo ultimo_nodo_padre(TColaCP cola) {
     }
 
     l_destruir(lista_nodos);
+    free(lista_nodos);
 
     return nodo_ultimo;
 }
@@ -235,6 +236,7 @@ void destruir_arbol(TNodo raiz) {
             destruir_arbol(raiz->hijo_derecho);
         }
 
+        free(raiz->entrada->clave);
         free(raiz->entrada);
         free(raiz);
     }

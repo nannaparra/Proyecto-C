@@ -39,7 +39,7 @@ void leer_nombre(TCiudad ciudad, FILE *archivo);
  * @param lista Lista de donde copiar
  * @param ciudad_a_sacar Ciudad a sacar
  */
-TLista copiar_lista(TLista lista, TCiudad ciudad_a_sacar);
+TLista* copiar_lista(TLista lista, TCiudad ciudad_a_sacar);
 
 void leer_archivo(char *path_archivo, TLista *lista_ciudades) {
     FILE *archivo_ciudades = fopen(path_archivo, "r");
@@ -158,14 +158,14 @@ void mostrar_descendente(TLista lista_ciudades) {
 void reducir_horas_manejo(TLista lista_ciudades) {
     TColaCP colaCP;
     TPosicion cursor_lista_aux;
-    TLista lista_aux = copiar_lista(lista_ciudades, ELE_NULO), lista_aux_vieja;
+    TLista* lista_aux = copiar_lista(lista_ciudades, ELE_NULO), *lista_aux_vieja;
     TCiudad posicion_actual = ciudad_actual, ciudad_cercana;
     TEntrada entrada, entrada_ciudad_cercana;
     int *clave;
     int total_recorrido = 0;
 
     for(int i = 0; i < l_size(lista_ciudades); i++) {
-        cursor_lista_aux = l_primera(lista_aux);
+        cursor_lista_aux = l_primera(*lista_aux);
 
         crear_cola_CP(&colaCP, &prioridad_ascendente);
         while(cursor_lista_aux != POS_NULA) {
@@ -179,7 +179,7 @@ void reducir_horas_manejo(TLista lista_ciudades) {
 
             cp_insertar(colaCP, entrada);
 
-            cursor_lista_aux = l_siguiente(lista_aux, cursor_lista_aux);
+            cursor_lista_aux = l_siguiente(*lista_aux, cursor_lista_aux);
         }
 
         entrada_ciudad_cercana = cp_eliminar(colaCP);
@@ -198,14 +198,16 @@ void reducir_horas_manejo(TLista lista_ciudades) {
         cp_destruir(colaCP);
 
         lista_aux_vieja = lista_aux;
-        lista_aux = copiar_lista(lista_aux_vieja, ciudad_cercana);
+        lista_aux = copiar_lista(*lista_aux_vieja, ciudad_cercana);
 
-        l_destruir(&lista_aux_vieja);
+        l_destruir(lista_aux_vieja);
+        free(lista_aux_vieja);
     }
 
     printf("Total recorrido: %i\n", total_recorrido);
 
-    l_destruir(&lista_aux);
+    l_destruir(lista_aux);
+    free(lista_aux);
 }
 
 void destruir_lista_ciudad(TLista* lista) {
@@ -223,7 +225,7 @@ void destruir_lista_ciudad(TLista* lista) {
     }
 
     l_destruir(lista);
-
+    free(lista);
     free(ciudad_actual);
 }
 
@@ -268,13 +270,13 @@ void leer_nombre(TCiudad ciudad, FILE *archivo) {
         caracter_leido = fgetc(archivo);
     }
 
-    ciudad->nombre = (char *) malloc(contador + 1);
+    ciudad->nombre = (char *) malloc(sizeof(char) * (contador + 1));
 
+    ciudad->nombre[contador] = '\0';
     memcpy(ciudad->nombre, nombre_final, contador);
-    ciudad->nombre[contador + 1] = '\0';
 }
 
-TLista copiar_lista(TLista lista, TCiudad ciudad_a_sacar) {
+TLista* copiar_lista(TLista lista, TCiudad ciudad_a_sacar) {
     TPosicion cursor = l_primera(lista), cursor_lista_nueva = POS_NULA, siguiente;
     TLista *lista_nueva = (TLista *) malloc(sizeof(TLista *));
     crear_lista(lista_nueva);
@@ -291,5 +293,5 @@ TLista copiar_lista(TLista lista, TCiudad ciudad_a_sacar) {
         cursor = l_siguiente(*lista_nueva, cursor);
     }
 
-    return *lista_nueva;
+    return lista_nueva;
 }
